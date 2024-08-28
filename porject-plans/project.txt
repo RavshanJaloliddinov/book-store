@@ -1,0 +1,80 @@
+category
+    id: int
+    name: varchar(255)
+    image: varchar(255)
+    category_id: int
+
+book
+    id: int
+    category_id: int
+    name: varchar(255)
+    price: int
+    images: list
+    description: text
+    author: varchar(255)
+    nashriyot: varchar(255)
+    muqova: varchar(255)
+    language(uz/krill): varchar(255)
+    betlar_soni: int
+    tarjimon: varchar(255)
+    janr: varchar(255)
+    count: int
+
+comment:
+    id: int
+    book_id: int
+    user_id: int
+    comment: text
+    created_date: Date
+
+user:
+    id: int
+    full_name: varchar(255)
+    phone_number: varchar(255)
+    password: varchar(255)
+    email: varchar(255)
+    image: varchar(255)
+
+box:
+    id: int
+    user_id: int
+    items: list
+    total_price: int
+    crated_date: Date
+
+contract:
+    id: int
+    user_id: int
+    created_date: Date
+    location: varchar(255)
+
+superadmin: 
+    id: int
+    full_name: varchar(255)
+    phone_number: varchar(255)
+    email: varchar(255)
+    image: varchar(255)
+
+admin:
+    id: int
+    full_name: varchar(255)
+    phone_number: varchar(255)
+    password: varchar(255)
+    email: varchar(255)
+    image: varchar(255)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+db.users.insertMany([
+    { 
+    name: 'Vali',
+    email: 'vali@gmail.com', 
+    age: 28,
+    relationship: {
+        name: 'Ruf', 
+        age: 19
+    },
+    photos: ['person.jpg'], 
+    birthday: Date()
+    },
+    {
+    name: 'Ali',
+    age: 99,
+    relationship: {
+        name: 'Lili', 
+        age: 22
+    },
+    photos: ['image.png', 'img.jpg'], 
+    birthday: Date()
+    }
+    
+])
