@@ -81,6 +81,27 @@ class CategoryController {
             })
         }
     }
+    deleteCategory = async(req, res) => {
+        try {
+            const {categoryId} = req.params
+            this.#_chekObjectId(categoryId)
+
+            const deleteCategory = await this.#_categoryModels.findOne(categoryId)
+
+            if (!deleteCategory) {
+                return res.status(404).send({ message: "Category topilmadi"});
+            }
+
+            res.send({
+                message: "Successfully deleted",
+                data: deleteCategory
+            })
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            })
+        }
+    }
 
     #_chekObjectId = (id) => {
         if(!isValidObjectId(id)) {
