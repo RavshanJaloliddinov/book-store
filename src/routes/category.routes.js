@@ -5,6 +5,9 @@ const categroryRouter = Router()
 
 categroryRouter
     .get("/", CategoryController.getAllCategory)
+    .post("/", CategoryController.createCategory)
+    .put("/", CategoryController.createCategory)
+    .delete("/", CategoryController.deleteCategory)
 
 
 module.exports = categroryRouter

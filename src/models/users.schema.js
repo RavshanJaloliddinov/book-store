@@ -1,11 +1,28 @@
 const{ Schema, model } = require("mongoose")
 
 const userSchema = new Schema({
-    full_name: String,
-    phone: String,
-    password: String,
-    email: String,
-    created_date: Date,
+    full_name: {
+        type: String,
+        required: [true, "full name kiritishli shart"],
+    },
+    phone: {
+        type: String,
+        required: [true, "phone kiritilishi shart"],
+        validate: {
+            validator: function(v) {
+                return v && v.length === 13;  // Telefon raqami uzunligi aniq 13 bo'lishi kerak
+            },
+            message: "phone 13 ta belgidan iborat bo'lishi kerak"
+        }
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    created_date: {
+        type: Date, 
+        default: Date.now
+    },
     image: String
 })
 const User = model("userModel", userSchema)

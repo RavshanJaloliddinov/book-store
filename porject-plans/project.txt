@@ -19,6 +19,7 @@ book
     tarjimon: varchar(255)
     janr: varchar(255)
     count: int
+    
 
 comment:
     id: int
