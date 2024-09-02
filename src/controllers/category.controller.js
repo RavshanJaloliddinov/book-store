@@ -7,7 +7,7 @@ class CategoryController {
         this.#_categoryModels = Category
     }
     getAllCategory = async(req, res) => {
-        const allCagtegory = await Category.find()
+        const allCagtegory = await this.#_categoryModels.find()
 
         res.send({
             message: "success",
@@ -70,7 +70,7 @@ class CategoryController {
                     category_id,
                 }
             })
-    
+            
             res.send({
                 message: "Success",
                 data: foundedCategory

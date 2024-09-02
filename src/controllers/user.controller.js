@@ -139,7 +139,6 @@ class userController {
         if(!isValidObjectId(id)) {
             throw new Error(`Id: ${id} is not a valid object`)
         }
-
         return null;
     }
 }
