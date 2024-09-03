@@ -45,8 +45,6 @@ class userController {
                 created_date: Date.now()
             })
 
-            // Userni saqlash
-            await newUser.save()
 
             // Ma'lumotlarni yuborish
             res.status(201).send({

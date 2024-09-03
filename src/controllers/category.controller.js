@@ -25,7 +25,7 @@ class CategoryController {
             const newCategory =  this.#_categoryModels.create({
                 name,
                 image,
-                category_id
+                category_id,
             })
 
             // Ma'lumotlarni yuborish
@@ -40,8 +40,7 @@ class CategoryController {
         }
 
     }
-
-
+    
     updateCategory = async (req, res) => {
         try {
             // Yangi ma'lumotlarni o'zgaruvchilarga saqlash
@@ -81,12 +80,13 @@ class CategoryController {
             })
         }
     }
+
     deleteCategory = async(req, res) => {
         try {
             const {categoryId} = req.params
             this.#_chekObjectId(categoryId)
 
-            const deleteCategory = await this.#_categoryModels.findOne(categoryId)
+            const deleteCategory = await this.#_categoryModels.findByIdAndDelete(categoryId)
 
             if (!deleteCategory) {
                 return res.status(404).send({ message: "Category topilmadi"});
