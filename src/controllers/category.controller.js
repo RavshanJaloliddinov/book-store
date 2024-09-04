@@ -1,4 +1,5 @@
 const Category = require("../models/category.schema")
+const {isValidObjectId} = require("mongoose")
 
 
 class CategoryController {
@@ -40,7 +41,7 @@ class CategoryController {
         }
 
     }
-    
+
     updateCategory = async (req, res) => {
         try {
             // Yangi ma'lumotlarni o'zgaruvchilarga saqlash

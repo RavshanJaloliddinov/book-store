@@ -1,5 +1,5 @@
-const Product = require("../models/category.schema")
-
+const Product = require("../models/product.schema")
+const {isValidObjectId} = require("mongoose")
 
 class productController{
 
@@ -10,12 +10,27 @@ class productController{
 
     getAllProducts = async (req, res) => {
         try {
-            const getAllProducts = await this.#_productModel.find()
+
+            const query = { 
+                ...query,  
+                price: {
+                    $gt: query.price.split("~")[0],
+                    $lt: query.price.split("~")[1],
+                },
+                rating: {
+                    $gte: query.rating.split("~")[0],
+                    $lte: query.rating.split("~")[1],
+                }
+                
+            };
+
+
+            const allProducts = await this.#_productModel.find(query)
 
             res.send({
                 message: "Success",
-                results: getAllProducts.length, 
-                data: getAllProducts
+                results: allProducts.length, 
+                data: allProducts
             })
 
         } catch (error) {
@@ -26,7 +41,7 @@ class productController{
     }
     createProduct = async (req, res) =>{
         try {
-            const {title, price, images, decription, author, publisher, language, genre, quentity} = req.body
+            const {title, price, images, description, author, publisher, language, genre, quentitiy} = req.body
 
             const newProduct = await this.#_productModel.create({
                 title,
@@ -37,7 +52,7 @@ class productController{
                 publisher,
                 language,
                 genre, 
-                quentity,
+                quentitiy,
             })
             res.status(201).send({
                 message: "Success",
@@ -53,9 +68,8 @@ class productController{
         try {
             const {productId} = req.body
             this.#_chekObjectId(productId)
-
-            deletedProduct = await this.#_productModel.findByIdAndDelete(productId)
-
+            const deletedProduct = await this.#_productModel.findByIdAndDelete(productId)
+            console.log(deletedProduct)
             if(!deletedProduct){
                 return res.status(404).send({message: "Product not found"})
             }

@@ -6,7 +6,7 @@ const productRouter = Router()
 productRouter
     .get("/", productController.getAllProducts)
     .post("/", productController.createProduct)
-    .put("/", productController.updateProduct)
-    .delete("/", productController.deleteProduct)
+    .put("/:productId", productController.updateProduct)
+    .delete("/:productId", productController.deleteProduct)
 
 module.exports = productRouter
