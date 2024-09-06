@@ -14,12 +14,10 @@ book
     author: varchar(255)
     nashriyot: varchar(255)
     muqova: varchar(255)
-    language(uz/krill): varchar(255)
-    betlar_soni: int
+    language: varchar(255)
     tarjimon: varchar(255)
-    janr: varchar(255)
+    genre: varchar(255)
     count: int
-    
 
 comment:
     id: int
@@ -48,6 +46,7 @@ contract:
     user_id: int
     created_date: Date
     location: varchar(255)
+    book_id
 
 superadmin: 
     id: int
@@ -63,19 +62,4 @@ admin:
     password: varchar(255)
     email: varchar(255)
     image: varchar(255)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
