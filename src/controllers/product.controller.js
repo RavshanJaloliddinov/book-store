@@ -11,41 +11,48 @@ class productController {
     getAllProducts = async (req, res) => {
         try {
 
-            // const query = { 
-            //     ...query,  
-            //     price: {
-            //         $gt: query.price.split("~")[0] || 0,
-            //         $lt: query.price.split("~")[1],      
-            //     },
-            //     rating: {
-            //         $gte: query.rating.split("~")[0],
-            //         $lte: query.rating.split("~")[1],
-            //     }
-
-            // };
-
             let query = { ...req.query };
-
+            const excludeQueries = ["limit", "page", "sort", "fields"]
+            excludeQueries.map((efl) => delete query[efl])
+            
+            
             query = JSON.parse(
                 JSON.stringify(query).replace(
                     /\b(lt|gt|lte|gte)\b/g,
                     (match) => `$${match}`
                 )
-            )
-            console.log(query)
+            );
+            let databaseQuery = this.#_productModel.find(query);
 
-            let databaseQuery = this.#_productModel.find(query)
 
-            const limit = req.query?.limit || 10;
-            const offset = req.query?.page ? (req.query.page - 1) * limit : 0;
-                
-            const allProducts = await databaseQuery.limit(limit).skip(offset); 
+            //  Sorting 
+            if(req.query.sort){
+                const sortFields = req.query.sort.split(",").join("")
+                databaseQuery = databaseQuery.sort(sortFields)
+            }else {
+                databaseQuery = databaseQuery.sort("price")
+            } 
 
+            // Fields limiting 
+            if(req.query.fields){
+                const selectedFields = req.query.fields.split(",").join(" ")
+
+                databaseQuery = databaseQuery.select(selectedFields)
+            }
+
+            // Pagination
+            const limit = !isNaN(req.query.limit) ? Number(req.query.limit) : 2;
+            const offset = !isNaN(req.query.page) ? (Number(req.query.page) - 1) * limit : 0;
+            
+            // Fetch paginated products
+            const allProducts = await databaseQuery.limit(limit).skip(offset);
+            
             res.send({
                 message: "Success",
+                page: req.query?.page || 1,
                 results: allProducts.length,
                 data: allProducts
-            })
+            });
 
         } catch (error) {
             res.status(500).send({
@@ -100,11 +107,22 @@ class productController {
         }
     }
     updateProduct = async (req, res) => {
+        const { title, price, images, description, author, publisher, language, genre, quentitiy } = req.body
         const { productId } = req.params
 
         this.#_chekObjectId(productId)
-
-        updatedProduct = await this.#_productModel.findByIdAndUpdate(productId)
+        
+        const updatedProduct = await this.#_productModel.findByIdAndUpdate({_id:productId}, {
+            title,
+            price,
+            images,
+            description,
+            author,
+            publisher,
+            language,
+            genre,
+            quentitiy,
+        })
         if (!updatedProduct) {
             res.status(404).send({ message: "Product not found" })
         }

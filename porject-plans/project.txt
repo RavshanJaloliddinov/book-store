@@ -13,7 +13,6 @@ book
     description: text
     author: varchar(255)
     nashriyot: varchar(255)
-    muqova: varchar(255)
     language: varchar(255)
     tarjimon: varchar(255)
     genre: varchar(255)
@@ -34,7 +33,7 @@ user:
     email: varchar(255)
     image: varchar(255)
 
-box:
+library:
     id: int
     user_id: int
     items: list
