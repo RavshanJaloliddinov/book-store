@@ -1,7 +1,6 @@
-import logger from "../utils/logger.utils.js";
+const logger = require("../utils/logger.utils.js")
 
-
-const sendDublicateFieldException = (err) => {
+const dublicateFieldException = (err) => {
   const error = { ...err };
 
   if (error.code != 11000) {
@@ -20,21 +19,21 @@ const sendDublicateFieldException = (err) => {
   return error;
 };
 
-const ErrorHandlerMiddleware = (err, _, res, __) => {
+const ErrorHandlerMiddleware = (error, req, res, next) => {
 
-  err = sendDublicateFieldException(err);
+  error = dublicateFieldException(error);
 
-  if (err.isException) {
+  if (error.isException) {
     
     logger.error(
-      `Exception (${err.name}): message: ${err.message}, status: ${
-        err.statusCode
+      `Exception (${error.name}): message: ${error.message}, status: ${
+        error.statusCode
       }; Time: ${new Date()}`
     );
 
-    return res.status(err.statusCode).send({
-      name: err.name,
-      message: err.message,
+    return res.status(error.statusCode).send({
+      name: error.name,
+      message: error.message,
     });
   }
 
@@ -42,3 +41,4 @@ const ErrorHandlerMiddleware = (err, _, res, __) => {
     message: "Internal Server Error",
   });
 };
+module.exports = ErrorHandlerMiddleware

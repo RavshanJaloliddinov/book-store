@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 // Joi validatsiya sxemasi
 const updateCategorySchema = Joi.object({
     name: Joi.string()
-        .required()
         .messages({
             "string.empty": "name kiritish shart",
             "any.required": "name kiritish shart"

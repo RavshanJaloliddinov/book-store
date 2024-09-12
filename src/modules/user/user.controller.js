@@ -1,7 +1,8 @@
-const { model, isValidObjectId } = require("mongoose")
-const User = require("./users.schema")
-const ApiFeature = require("../../utils/api-featuries.utils")
-const { createUserSchema } = require("./dtos/user-create.dto")
+const { model, isValidObjectId } = require("mongoose");
+const User = require("./users.schema");
+const ApiFeature = require("../../utils/api-featuries.utils");
+const fs = require('fs');
+const path = require('path');
 
 class userController {
 
@@ -39,87 +40,111 @@ class userController {
 
     }
 
-    // Yangi user yaratish
     createUser = async (req, res, next) => {
         try {
-        const { full_name, phone, email, image, role } = req.body;
-
-        // User yaratish
-        const newUser = await this.#_userModel.create({
-            full_name,
-            phone,
-            email,
-            image,
-            role,
-        });
-
-        // Ma'lumotlarni yuborish
-        return res.status(201).send({
-            message: "success",
-            data: newUser
-        });
-
+            const { full_name, phone, email, role } = req.body;
+            const image = req.file ? req.file.filename : null; // Fayl bo'lsa, uning nomini olish
+    
+            // User yaratish
+            const newUser = await this.#_userModel.create({
+                full_name,
+                phone,
+                email,
+                image, 
+                role,
+            });
+    
+            // Ma'lumotlarni yuborish
+            return res.status(201).send({
+                message: "success",
+                data: newUser
+            });
+    
         } catch (error) {
             next(error)
         }
-
-    }
-
-    // Userlarni yangilash
+    };
+    
     updateUser = async (req, res, next) => {
         try {
-            // Yangi ma'lumotlarni o'zgaruvchilarga saqlash
-            const {full_name, phone_number, email, image} = req.body;
-
-            // User idisin aniqlash
-            const { userId } = req.params
-
-            //User id to'gri ekanligin tekshirish
-            this.#_chekObjectId(userId)
-
+            const { full_name, phone_number, email } = req.body;
+            const { userId } = req.params;
+    
+            // Fayl bo'lsa, uning nomini olish
+            const newImage = req.file ? req.file.filename : null;
+    
+            // User id to'g'ri ekanligini tekshirish
+            this.#_chekObjectId(userId);
+    
             // Userni topish
-            const foundedUser = await this.#_userModel.findById(userId)
-
+            const foundedUser = await this.#_userModel.findById(userId);
+    
             // Userni tekshirish
-            if(!foundedUser){
-               return res.status(404).send({message: 'User topilmadi'})
+            if (!foundedUser) {
+                return res.status(404).send({ message: 'User topilmadi' });
             }
+    
+            // Eski rasmni o'chirish (agar bo'lsa)
+            if (foundedUser.image && newImage && foundedUser.image !== newImage) {
+                const oldImagePath = path.join(__dirname, 'uploads', foundedUser.image);
+                fs.unlink(oldImagePath, (err) => {
+                    if (err) {
+                        console.error('Rasmni o\'chirishda xato:', err);
+                    }
+                });
+            }
+    
             // Userni databasedan yangilash
-            await User.findByIdAndUpdate(
+            const updatedUser = await this.#_userModel.findByIdAndUpdate(
                 userId,
-            {
-                $set: {
-                    full_name,
-                    phone: phone_number,
-                    email,
-                    image,
-                    created_date: Date.now()            
-                }
-            })
-
+                {
+                    $set: {
+                        full_name,
+                        phone: phone_number,
+                        email,
+                        image: newImage, // Yangilangan rasm nomi
+                    }
+                },
+                { new: true } // Yangilangan userni qaytarish
+            );
+    
             res.send({
-                message: "Succes",
-                data: foundedUser
-            })        
+                message: "Success",
+                data: updatedUser
+            });
+    
         } catch (error) {
-            next(error)
+            next(error);
         }
-    }
+    };
+    
+    
 
     // Userlarni o'chirish
     deleteUser = async (req, res, next) => {
         try {
             const { userId } = req.params;
-
+    
             // User id to'g'ri ekanligini tekshirish
-            this.#_chekObjectId(userId)
+            this.#_chekObjectId(userId);
     
-            // Userlarni databasedan o'chirish
-            const deletedUser = await this.#_userModel.findByIdAndDelete(userId).limitFields();
-    
+            // Userni topish
+            const deletedUser = await this.#_userModel.findByIdAndDelete(userId);
+            
             // Userni tekshirish
             if (!deletedUser) {
                 return res.status(404).send({ message: 'User topilmadi' });
+            }
+    
+            // Eski rasmni o'chirish (agar bo'lsa)
+            if (deletedUser.image) {
+                const imagePath = path.join(__dirname, 'uploads', deletedUser.image);
+                console.log(deletedUser.image, imagePath)
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error('Rasmni o\'chirishda xato:', err);
+                    }
+                });
             }
     
             // Ma'lumotlarni yuborish
@@ -127,11 +152,11 @@ class userController {
                 message: "User muvaffaqiyatli o'chirildi",
                 data: deletedUser,
             });
-
+    
         } catch (error) {
-            next(error)
+            next(error);
         }
-    } 
+    };
     
     // Obejct id to'gri ekanligini tekshiruvchi funktsiya     
     #_chekObjectId = (id) => {

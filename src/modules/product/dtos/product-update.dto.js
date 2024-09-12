@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 // Joi validatsiya sxemasi
 const updateProductSchema = Joi.object({
     title: Joi.string()
-        .required()
         .messages({
             "string.empty": "Title kiritish shart",
             "any.required": "Title kiritish shart"
@@ -17,14 +16,12 @@ const updateProductSchema = Joi.object({
             }
             return value;
         })
-        .required()
         .messages({
             "string.empty": "Category ID kiritish shart",
             "any.required": "Category ID kiritish shart"
         }),
 
     price: Joi.number()
-        .required()
         .positive()
         .messages({
             "number.base": "Price raqam bo‘lishi kerak",
@@ -33,35 +30,30 @@ const updateProductSchema = Joi.object({
         }),
 
     images: Joi.string()
-        .required()
         .messages({
             "string.empty": "Images kiritish shart",
             "any.required": "Images kiritish shart"
         }),
 
     description: Joi.string()
-        .required()
         .messages({
             "string.empty": "Description kiritish shart",
             "any.required": "Description kiritish shart"
         }),
 
     author: Joi.string()
-        .required()
         .messages({
             "string.empty": "Author kiritish shart",
             "any.required": "Author kiritish shart"
         }),
 
     publisher: Joi.string()
-        .required()
         .messages({
             "string.empty": "Publisher kiritish shart",
             "any.required": "Publisher kiritish shart"
         }),
 
     language: Joi.string()
-        .required()
         .messages({
             "string.empty": "Language kiritish shart",
             "any.required": "Language kiritish shart"
@@ -69,14 +61,12 @@ const updateProductSchema = Joi.object({
 
     genre: Joi.string()
         .valid('Fantasy', 'Science Fiction', 'Adventure', 'Mystery', 'Thriller', 'Romance', 'Drama', 'Horror', 'Historical Fiction', 'Biography', 'Non-Fiction', 'Self-Help', 'Philosophy')
-        .required()
         .messages({
             "any.only": "Genre quyidagi qiymatlardan biri bo‘lishi kerak: Fantasy, Science Fiction, Adventure, Mystery, Thriller, Romance, Drama, Horror, Historical Fiction, Biography, Non-Fiction, Self-Help, Philosophy",
             "any.required": "Genre kiritish shart"
         }),
 
     quentitiy: Joi.number()
-        .required()
         .positive()
         .messages({
             "number.base": "Quentitiy raqam bo‘lishi kerak",
