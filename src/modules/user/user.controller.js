@@ -1,6 +1,7 @@
 const { model, isValidObjectId } = require("mongoose")
-const User = require("../models/users.schema")
-
+const User = require("./users.schema")
+const ApiFeature = require("../../utils/api-featuries.utils")
+const { createUserSchema } = require("./dtos/user-create.dto")
 
 class userController {
 
@@ -8,13 +9,23 @@ class userController {
     constructor(){
         this.#_userModel = User
     }
-
+    
     //Userlarni olib kelish
-    getAllUsers = async (req, res) => {
+    getAllUsers = async (req, res, next) => {
         try {
 
+        let query = { ...req.query };      
+
         // userlarni allUsersga saqlash
-        const allUsers = await this.#_userModel.find()
+        const allUsers = await new ApiFeature(
+            this.#_userModel.find(),
+            query
+        )
+        .limitFields()
+        .paginate()
+        .sort("created_date")
+        .filter()
+        .getQuery()
 
         // ma'lumotlarni yuborish
         res.send({
@@ -23,47 +34,42 @@ class userController {
             data: allUsers, 
         })     
         } catch (error) {
-            res.status(500).send({
-                message: error.message
-            })
+            next(error)
         }
 
     }
+
     // Yangi user yaratish
-    createUser = async (req, res) => {
+    createUser = async (req, res, next) => {
         try {
-            // Ma'lumotlarni o'zgaruvchilarga saqlash
-            const {full_name, phone_number, password, email, image} = req.body;
+        const { full_name, phone, email, image, role } = req.body;
 
-            // User yaratish
-            const newUser =  this.#_userModel.create({
-                full_name,
-                phone: phone_number,
-                password,
-                email,
-                image,
-                created_date: Date.now()
-            })
+        // User yaratish
+        const newUser = await this.#_userModel.create({
+            full_name,
+            phone,
+            email,
+            image,
+            role,
+        });
 
+        // Ma'lumotlarni yuborish
+        return res.status(201).send({
+            message: "success",
+            data: newUser
+        });
 
-            // Ma'lumotlarni yuborish
-            res.status(201).send({
-                message: "success",
-                data: newUser
-            })
         } catch (error) {
-            res.status(500).send({
-                message: error.message
-            })
+            next(error)
         }
 
     }
 
     // Userlarni yangilash
-    updateUser = async (req, res) => {
+    updateUser = async (req, res, next) => {
         try {
             // Yangi ma'lumotlarni o'zgaruvchilarga saqlash
-            const {full_name, phone_number, password, email, image} = req.body;
+            const {full_name, phone_number, email, image} = req.body;
 
             // User idisin aniqlash
             const { userId } = req.params
@@ -85,10 +91,9 @@ class userController {
                 $set: {
                     full_name,
                     phone: phone_number,
-                    password,
                     email,
                     image,
-                    created_date: Date.now()
+                    created_date: Date.now()            
                 }
             })
 
@@ -97,14 +102,12 @@ class userController {
                 data: foundedUser
             })        
         } catch (error) {
-            res.status(500).send({
-                message: error.message
-            })
+            next(error)
         }
     }
 
     // Userlarni o'chirish
-    deleteUser = async (req, res) => {
+    deleteUser = async (req, res, next) => {
         try {
             const { userId } = req.params;
 
@@ -112,7 +115,7 @@ class userController {
             this.#_chekObjectId(userId)
     
             // Userlarni databasedan o'chirish
-            const deletedUser = await this.#_userModel.findByIdAndDelete(userId);
+            const deletedUser = await this.#_userModel.findByIdAndDelete(userId).limitFields();
     
             // Userni tekshirish
             if (!deletedUser) {
@@ -126,9 +129,7 @@ class userController {
             });
 
         } catch (error) {
-            res.status(500).send({
-                message: error.message
-            })
+            next(error)
         }
     } 
     

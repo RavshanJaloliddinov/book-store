@@ -5,11 +5,10 @@ const categorySchema = new Schema({
         type: String,
         required: true
     },
-    image: {
-        type: String,
-        required: true
-    },
-    category_id: Number
+    category_id: { 
+        type: Schema.Types.ObjectId, 
+        ref: 'category' 
+    }
 })
 
 const Category = model("category", categorySchema)

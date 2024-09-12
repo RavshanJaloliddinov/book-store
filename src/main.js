@@ -15,11 +15,18 @@ app.use(bodyParser.urlencoded({extended: true}))
 // Routes
 app.use("/api/v1", routes)
 
-// Connecting to mongoDB
+// Sends a 404 response for all undefined routes
+app.all("*", (req, res) => {
+    res.status(404).send({
+    message: `${req.url} endpoint mavjud emas`,
+    });
+  });
+
+
+  // Connecting to mongoDB
 mongoDB()
     .then(() => console.log("mongoDB connected"))
     .catch((err) => (console.log(err)))
-
 
 app.listen(appConfig.port, appConfig.host, () => {
     console.log(`listening on ${appConfig.port}`)
