@@ -18,17 +18,11 @@ class AuthController {
   signin = async (req, res, next) => {
     try {
       const foundedUser = await this.#_userModel.findOne({
-        username: req.body.username,
+        email: req.body.email,
       });
 
       if (!foundedUser) {
         res.status(404).send({message: "user not found"})
-      }
-
-      if (!result) {
-        return res.status(409).send({
-          message: "Invalid password or username",
-        });
       }
 
       const accessToken = signToken({
@@ -109,11 +103,6 @@ class AuthController {
     } catch (error) {
       next(error);
     }
-  };
-
-  // REGISTER
-  signup = async (req, res) => {
-    res.send("ok");
   };
 }
 

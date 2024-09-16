@@ -40,18 +40,13 @@ class userController {
 
     }
 
-    createUser = async (req, res, next) => {
+    createUserByUser = async (req, res, next) => {
         try {
-            const { full_name, phone, email, role } = req.body;
-            const image = req.file ? req.file.filename : null; // Fayl bo'lsa, uning nomini olish
-    
+            const { email } = req.body;    
             // User yaratish
             const newUser = await this.#_userModel.create({
-                full_name,
-                phone,
                 email,
-                image, 
-                role,
+                
             });
     
             // Ma'lumotlarni yuborish
@@ -59,7 +54,6 @@ class userController {
                 message: "success",
                 data: newUser
             });
-    
         } catch (error) {
             next(error)
         }
