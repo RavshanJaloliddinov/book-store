@@ -12,7 +12,7 @@ userRouter
         "/", 
         upload.single("image"), // Bitta rasm yuklanadi
         ValidationMiddleware(createUserSchema), 
-        userController.createUser
+        userController.createUserByUser
     )
     .put(
         "/:userId", 

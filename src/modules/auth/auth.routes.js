@@ -8,7 +8,7 @@ const generateOTPDto = require("./dtos/genereate-otp.dto.js");
 const authRoutes = Router();
 
 authRoutes
-  .post("/login", ValidationMiddleware(loginSchema), authController.signin)
+  .post("/login", authController.signin)
   .post(
     "/generate-otp",
     ValidationMiddleware(generateOTPDto),

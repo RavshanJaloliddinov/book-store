@@ -1,35 +1,38 @@
 const bcrypt = require("bcrypt");
 const User = require("../user/users.schema.js");
-const sendMail  = require("../../utils/send-email.utils.js");
+const sendMail = require("../../utils/send-email.utils.js");
 const crypto = require("crypto");
 const generateOTP = require("../../utils/generate-otp.utils.js");
 const Otp = require("./otp.model.js");
+const signToken = require("../../helper/jwt.helper.js");
 
 class AuthController {
-    #_userModel
-    #_otpModel
+  #_userModel
+  #_otpModel
 
-    constructor() {
-        this.#_userModel = User;
-        this.#_otpModel = Otp;
-    }
+  constructor() {
+    this.#_userModel = User;
+    this.#_otpModel = Otp;
+  }
 
   // LOGIN
   signin = async (req, res, next) => {
     try {
+
       const foundedUser = await this.#_userModel.findOne({
         email: req.body.email,
       });
 
+
       if (!foundedUser) {
-        res.status(404).send({message: "user not found"})
-      }
+        res.status(404).send({message: "User not found"})
+      };
 
       const accessToken = signToken({
-        id: foundedUser.id,
+        email: foundedUser.email,
         role: foundedUser.role,
       });
-
+      res.send({foundedUser, accessToken})
       res.cookie("token", accessToken, { maxAge: 1000 * 60 * 6, signed: true });
 
       switch (foundedUser.role) {
@@ -66,7 +69,7 @@ class AuthController {
 
       await sendMail({
         to: email,
-        subject: "Verification code for LMS",
+        subject: "Verification code for Book Store",
         html: `
         <h2>Your verification code:</h2>
         <input type="text" disabled value='${otpCode}'/>
@@ -75,6 +78,7 @@ class AuthController {
 
       res.send({
         verifyText,
+        code: otpCode,
       });
     } catch (error) {
       next(error);
@@ -89,10 +93,10 @@ class AuthController {
       const foundedOtp = await this.#_otpModel.findOne({ code, verifyText });
 
       if (!foundedOtp) {
-        res.send({message: "Your OTP is already expired or used"})
+        res.send({ message: "Your OTP is already expired or used" })
       }
 
-      await this.#_otpModel.findByIdAndDelete(foundedOtp.id);
+      await this.#_otpModel.findByIdAndDelete(foundedOtp._id);
 
       res.send({
         user: {

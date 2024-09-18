@@ -8,7 +8,6 @@ const ValidationMiddleware = (schema) => {
                 message: error.message,
             });
         }
-  
         req.body = value;
         next();
     };

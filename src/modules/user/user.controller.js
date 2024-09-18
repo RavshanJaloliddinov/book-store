@@ -46,7 +46,6 @@ class userController {
             // User yaratish
             const newUser = await this.#_userModel.create({
                 email,
-                
             });
     
             // Ma'lumotlarni yuborish
@@ -80,7 +79,7 @@ class userController {
     
             // Eski rasmni o'chirish (agar bo'lsa)
             if (foundedUser.image && newImage && foundedUser.image !== newImage) {
-                const oldImagePath = path.join(__dirname, 'uploads', foundedUser.image);
+                const oldImagePath = path.join(process.cwd(), 'uploads', foundedUser.image);
                 fs.unlink(oldImagePath, (err) => {
                     if (err) {
                         console.error('Rasmni o\'chirishda xato:', err);
@@ -132,8 +131,7 @@ class userController {
     
             // Eski rasmni o'chirish (agar bo'lsa)
             if (deletedUser.image) {
-                const imagePath = path.join(__dirname, 'uploads', deletedUser.image);
-                console.log(deletedUser.image, imagePath)
+                const imagePath = path.join(process.cwd(), '/uploads', deletedUser.image);
                 fs.unlink(imagePath, (err) => {
                     if (err) {
                         console.error('Rasmni o\'chirishda xato:', err);
