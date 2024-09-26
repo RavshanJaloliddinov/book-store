@@ -16,14 +16,6 @@ const createUserSchema = Joi.object({
         .max(50) // Maksimal uzunlik 50 belgidan oshmasligi kerak
         .required(), // Email majburiy bo'lishi kerak
 
-    phone: Joi
-        .string()
-        .length(12) // Telefon raqami uzunligi 12 ta belgi bo'lishi kerak
-        .pattern(/^[0-9]+$/) // Faqat raqamlardan iborat bo'lishi kerak
-        .messages({
-        "string.empty": "phone kiritish shart",
-        "string.length": "phone 12 ta belgidan iborat bo'lishi kerak",
-        }),
             
     role: Joi.string()
         .valid("super-admin", "admin", "user") // Role faqat ma'lum qiymatlar bo'lishi kerak

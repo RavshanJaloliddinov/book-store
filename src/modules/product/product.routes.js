@@ -4,28 +4,38 @@ const { ValidationMiddleware } = require("../../middleware/validation.middleware
 const { createProductSchema } = require("./dtos/product-create.dto");
 const { updateProductSchema } = require("./dtos/product-update.dto"); // ".dro" o'rniga ".dto"
 const upload = require("../../utils/multer.utils");
+const CheckRoleGuards = require('../../guards/check-role.guard')
+const CheckAuthGuards = require('../../guards/check-auth.guard')
 
-const productRouter = Router();
+const productRouter = Router(); 
 
 productRouter
-    .get("/", productController.getAllProducts)
-    
-    // Bir nechta rasm yuklash bilan mahsulot yaratish
+    .get("/", 
+        CheckAuthGuards(true),
+        CheckRoleGuards("super-admin", "admin", 'user'),
+        productController.getAllProducts
+    )
     .post(
         "/", 
         upload.array("images", 5), // Maksimal 5 ta rasm yuklanishi mumkin
-        ValidationMiddleware(createProductSchema), 
+        CheckAuthGuards(true),
+        CheckRoleGuards("super-admin", "admin", 'user'),
+        // ValidationMiddleware(createProductSchema), 
         productController.createProduct
     )
-    
-    // Bir nechta rasm yuklash bilan mahsulot yangilash
     .put(
         "/:productId", 
         upload.array("images", 5), // Maksimal 5 ta rasm yuklanishi mumkin
+        CheckAuthGuards(true),
+        CheckRoleGuards("super-admin", "admin", 'user'),
         ValidationMiddleware(updateProductSchema), 
         productController.updateProduct
     )
-    
-    .delete("/:productId", productController.deleteProduct);
+    .delete(
+        "/:productId", 
+        CheckAuthGuards(true),
+        CheckRoleGuards("super-admin", "admin", 'user'),
+        productController.deleteProduct
+    );
 
 module.exports = productRouter;

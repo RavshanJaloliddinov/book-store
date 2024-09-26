@@ -32,12 +32,23 @@ const createProductSchema = Joi.object({
             "number.positive": "Price musbat raqam bo‘lishi kerak"
         }),
 
-    images: Joi.string()
-        .required()
-        .messages({
-            "string.empty": "Images kiritish shart",
-            "any.required": "Images kiritish shart"
-        }),
+    images: Joi.array()
+    .items(
+        Joi.object({
+            filename: Joi.string()
+                .required()
+                .messages({
+                    "string.empty": "Fayl nomi bo'sh bo'lishi mumkin emas",
+                    "any.required": "Fayl nomini kiritish shart"
+                })
+        })
+    )
+    .required()
+    .messages({
+        "array.base": "Images massiv bo'lishi kerak",
+        "array.empty": "Kamida bitta fayl kiritish kerak",
+        "any.required": "Images kiritish shart"
+    }),
 
     description: Joi.string()
         .required()

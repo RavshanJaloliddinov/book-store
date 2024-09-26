@@ -4,7 +4,7 @@ const sendMail = require("../../utils/send-email.utils.js");
 const crypto = require("crypto");
 const generateOTP = require("../../utils/generate-otp.utils.js");
 const Otp = require("./otp.model.js");
-const signToken = require("../../helper/jwt.helper.js");
+const {signToken, verifyToken} = require("../../helper/jwt.helper.js");
 
 class AuthController {
   #_userModel
@@ -32,22 +32,22 @@ class AuthController {
         email: foundedUser.email,
         role: foundedUser.role,
       });
-      res.send({foundedUser, accessToken})
+      
       res.cookie("token", accessToken, { maxAge: 1000 * 60 * 6, signed: true });
-
-      switch (foundedUser.role) {
-        case "user":
-          res.redirect("/user");
-          break;
-        case "admin":
-          res.redirect("/admin");
-          break;
-        case "super-admin":
-          res.redirect("/super-admin");
-          break;
-        default:
-          res.render("404", { message: "User page not found" });
-      }
+      res.send({foundedUser, accessToken})
+      // switch (foundedUser.role) {
+      //   case "user":
+      //     res.redirect("/user");
+      //     break;
+      //   case "admin":
+      //     res.redirect("/admin");
+      //     break;
+      //   case "super-admin":
+      //     res.redirect("/super-admin");
+      //     break;
+      //   default:
+      //     res.render("404", { message: "User page not found" });
+      // }
     } catch (error) {
       next(error);
     }

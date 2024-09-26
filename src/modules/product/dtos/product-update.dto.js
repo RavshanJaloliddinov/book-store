@@ -29,7 +29,8 @@ const updateProductSchema = Joi.object({
             "number.positive": "Price musbat raqam bo‘lishi kerak"
         }),
 
-    images: Joi.string()
+    images: Joi.array()
+        .items(Joi.string())
         .messages({
             "string.empty": "Images kiritish shart",
             "any.required": "Images kiritish shart"

@@ -1,7 +1,8 @@
 const Product = require("./product.schema")
 const { isValidObjectId } = require("mongoose")
 const ApiFeature = require("../../utils/api-featuries.utils")
-
+const fs = require('fs')
+const path = require('path');
 
 class productController {
 
@@ -38,11 +39,11 @@ class productController {
     }
     createProduct = async (req, res, next) => {
         try {
-            const { category_id, title, price, description, author, publisher, language, genre, quantity } = req.body;
-    
+            const { category_id, title, price, description, author, publisher, language, genre, quentitiy } = req.body;
+            
+            
             // Fayllarni olish
             const images = req.files ? req.files.map(file => file.filename) : [];
-    
             const newProduct = await this.#_productModel.create({
                 category_id,
                 title,
@@ -50,10 +51,11 @@ class productController {
                 description,
                 author,
                 publisher,
-                language,
+                language,   
                 images, 
                 genre,
-                quantity,
+                quentitiy,
+                
             });
     
             res.status(201).send({
@@ -73,6 +75,17 @@ class productController {
             if (!deletedProduct) {
                 return res.status(404).send({ message: "Product not found" })
             }
+            const images = deletedProduct.images
+            
+            for (var i of images){
+                var imagePath = path.join(process.cwd(), '/uploads', i);
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error('Rasmni o\'chirishda xato:', err);
+                    }
+                });
+            }
+            
 
             res.send({
                 message: "Successfully deleted",
@@ -87,7 +100,7 @@ class productController {
         try {
             const { category_id, title, price, description, author, publisher, language, genre, quantity } = req.body;
             const { productId } = req.params;
-    
+            
             // Fayllarni olish
             const images = req.files ? req.files.map(file => file.filename) : [];
     
@@ -95,6 +108,8 @@ class productController {
             if (!productId) {
                 return res.status(400).send({ message: "Mahsulot ID kiritilishi kerak" });
             }
+
+            
     
             // ObjectId ning to'g'riligini tekshirish
             this.#_chekObjectId(productId);
@@ -114,8 +129,17 @@ class productController {
                     genre,
                     quantity,
                 },
-                { new: true } // Yangilangan mahsulotni qaytarish
+                { new: false } // Yangilangan mahsulotni qaytarish
             );
+
+            for (var i of updatedProduct.images){
+                var imagePath = path.join(process.cwd(), '/uploads', i);
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error('Rasmni o\'chirishda xato:', err);
+                    }
+                });
+            }
     
             // Agar mahsulot topilmasa
             if (!updatedProduct) {

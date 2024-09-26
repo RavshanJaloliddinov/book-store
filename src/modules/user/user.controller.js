@@ -39,13 +39,30 @@ class userController {
         }
 
     }
+    createUserByAdmin = async (req, res, next) => {
+        try {
+            const {email, role, full_name} = req.body
+
+            const newUser = await this.#_userModel.create({
+                email,
+                role, 
+                full_name
+            })
+            return res.status(201).send({
+                message: "success",
+                data: newUser
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 
     createUserByUser = async (req, res, next) => {
         try {
             const { email } = req.body;    
             // User yaratish
             const newUser = await this.#_userModel.create({
-                email,
+                email
             });
     
             // Ma'lumotlarni yuborish
@@ -68,9 +85,7 @@ class userController {
     
             // User id to'g'ri ekanligini tekshirish
             this.#_chekObjectId(userId);
-    
-            // Userni topish
-            const foundedUser = await this.#_userModel.findById(userId);
+
     
             // Userni tekshirish
             if (!foundedUser) {
@@ -79,7 +94,9 @@ class userController {
     
             // Eski rasmni o'chirish (agar bo'lsa)
             if (foundedUser.image && newImage && foundedUser.image !== newImage) {
-                const oldImagePath = path.join(process.cwd(), 'uploads', foundedUser.image);
+
+                const oldImagePath = path.join(process.cwd(), '/uploads', foundedUser.image)
+
                 fs.unlink(oldImagePath, (err) => {
                     if (err) {
                         console.error('Rasmni o\'chirishda xato:', err);
@@ -98,7 +115,7 @@ class userController {
                         image: newImage, // Yangilangan rasm nomi
                     }
                 },
-                { new: true } // Yangilangan userni qaytarish
+                { new: false } 
             );
     
             res.send({
